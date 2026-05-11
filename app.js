@@ -91,20 +91,29 @@ app.get('/jogos/:id', (req, res) => {
 app.post('/jogos', (req, res) => {
     const { nome, tipo, nota, review } = req.body;
     
-    // Defesa para os testes cruzados: bloqueia criação sem os campos necessários
+    // Defesa 1: Verifica se falta algum campo
     if (!nome || !tipo || nota === undefined || !review) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios." });
     }
 
+    // Defesa 2: Verifica se a nota NÃO é um número
+    if (typeof nota !== 'number') {
+        return res.status(400).json({ error: "O campo 'nota' deve ser um número válido." });
+    }
+
+    // Defesa 3: Verifica se a nota está entre 0 e 10
+    if (nota < 0 || nota > 10) {
+        return res.status(400).json({ error: "A nota deve ser um valor entre 0 e 10." });
+    }
+
+    // Só chega aqui se passou por TODAS as defesas. Agora sim, salvamos no banco.
     const query = `INSERT INTO jogos (nome, tipo, nota, review) VALUES (?, ?, ?, ?)`;
     
-    // Necessário usar function(err) em vez de arrow function () => para acessar o this.lastID do SQLite
     db.run(query, [nome, tipo, nota, review], function(err) {
         if (err) {
             return res.status(500).json({ error: "Erro ao salvar no banco de dados." });
         }
         
-        // Retorna status 201 Created, exigência do PDF
         return res.status(201).json({
             id: this.lastID,
             nome,
@@ -114,7 +123,6 @@ app.post('/jogos', (req, res) => {
         });
     });
 });
-
 // PUT /jogos/{id} - Atualiza um jogo existente
 app.put('/jogos/:id', (req, res) => {
     const id = req.params.id;
