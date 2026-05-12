@@ -165,6 +165,11 @@ app.delete('/jogos/:id', (req, res) => {
             return res.status(500).json({ error: "Erro interno do servidor." });
         }
         
+        // Defesa: Verifica se alguma linha foi realmente deletada no banco
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Jogo não encontrado para exclusão." });
+        }
+        
         // Retorna 204 No Content (exige não ter corpo de resposta)
         return res.status(204).send();
     });
