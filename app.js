@@ -1,8 +1,11 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
+
 
 // ==========================================
 // CONFIGURAÇÃO DO BANCO DE DADOS (SQLITE)
