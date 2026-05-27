@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
+const { text } = require('node:stream/consumers');
 
 const app = express();
 app.use(cors());
@@ -151,10 +152,10 @@ app.put('/jogos/:id', (req, res) => {
         // Retorna status 200 OK com o objeto atualizado
         return res.status(200).json({
             id: Number(id),
-            nome,
-            tipo,
-            nota,
-            review
+            nome: text(nome),
+            tipo: text(tipo),
+            nota: Number(nota),
+            review: text(review)
         });
     });
 });
